@@ -87,6 +87,7 @@ class PlayerFragment : Fragment(), BackPressInterceptor {
 
     /** Set when the panel was taken away because the window shrank, so it can come back. */
     private var commentsHiddenForSmallWindow = false
+    private var commentsPausedPlayback = false
 
     /** A reply followed from a notification, opened once this fragment has a media source. */
     private var pendingCommentId: String? = null
@@ -271,10 +272,14 @@ class PlayerFragment : Fragment(), BackPressInterceptor {
         // Create playback menus
         playerMenus = PlayerMenus(this, playerBinding, playerControlsBinding)
 
-        // Create the comments panel (kept inside the player layout so playback is never paused)
-        commentsPanel = CommentsPanel(this, playerBinding) { count ->
-            playerMenus?.updateCommentsCount(count)
-        }
+        // Create the comments panel inside the player layout, pausing playback while it is open.
+        commentsPanel = CommentsPanel(
+            fragment = this,
+            binding = playerBinding,
+            onCountChanged = { count -> playerMenus?.updateCommentsCount(count) },
+            onOpen = ::pauseForComments,
+            onClose = ::resumeAfterComments,
+        )
         // The media-source observer may already have fired while this view was being built.
         openPendingCommentThread(viewModel.mediaSourceOrNull?.itemId?.toString())
 
@@ -522,6 +527,20 @@ class PlayerFragment : Fragment(), BackPressInterceptor {
         } else {
             playerBinding.commentsContainer.post { syncCommentsWithWindowSize() }
         }
+    }
+
+    private fun pauseForComments() {
+        val player = viewModel.playerOrNull ?: return
+        if (player.playWhenReady) {
+            commentsPausedPlayback = true
+            viewModel.pause()
+        }
+    }
+
+    private fun resumeAfterComments() {
+        if (!commentsPausedPlayback) return
+        commentsPausedPlayback = false
+        viewModel.play()
     }
 
     /**

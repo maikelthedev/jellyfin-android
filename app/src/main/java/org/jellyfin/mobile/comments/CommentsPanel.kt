@@ -53,6 +53,8 @@ class CommentsPanel(
     private val fragment: PlayerFragment,
     private val binding: FragmentPlayerBinding,
     private val onCountChanged: (Int) -> Unit = {},
+    private val onOpen: () -> Unit = {},
+    private val onClose: () -> Unit = {},
 ) : KoinComponent {
     private companion object {
         /** Share of the available height the sheet takes. */
@@ -190,6 +192,7 @@ class CommentsPanel(
     }
 
     fun show(itemId: String) {
+        val wasOpen = isOpen
         this.itemId = itemId
         setReplying(null)
         input.text = null
@@ -203,6 +206,7 @@ class CommentsPanel(
         refreshBell()
 
         isOpen = true
+        if (!wasOpen) onOpen()
         container.isVisible = true
         container.alpha = 0f
         sheet.translationY = sheet.height.toFloat().takeIf { it > 0 } ?: context.resources.displayMetrics.heightPixels.toFloat()
@@ -218,6 +222,7 @@ class CommentsPanel(
 
     fun hide() {
         isOpen = false
+        onClose()
         fragment.suppressControllerAutoHide(false)
         setReplying(null)
         input.text = null
@@ -240,6 +245,7 @@ class CommentsPanel(
             return
         }
         isOpen = false
+        onClose()
         fragment.suppressControllerAutoHide(false)
         setReplying(null)
         input.text = null
@@ -256,6 +262,7 @@ class CommentsPanel(
             return
         }
         isOpen = true
+        onOpen()
         container.isVisible = true
         container.alpha = 1f
         fragment.suppressControllerAutoHide(true)
