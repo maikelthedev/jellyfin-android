@@ -338,7 +338,7 @@
                             android:background="?android:attr/selectableItemBackground"
                             android:paddingHorizontal="6dp"
                             android:paddingVertical="4dp"
-                            android:text="@string/comments_remove_gif"
+                            android:text="@string/comments_remove_attachment"
                             android:textColor="#FE2C55"
                             android:textSize="12sp"
                             android:textStyle="bold" />
