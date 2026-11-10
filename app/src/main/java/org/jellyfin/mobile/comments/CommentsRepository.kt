@@ -70,12 +70,8 @@ class CommentsRepository(
     /** Uploads a GIF/image picked by the keyboard and returns its stored file name. */
     suspend fun uploadMedia(bytes: ByteArray, contentType: String): MediaUploadDto = withContext(Dispatchers.IO) {
         val baseUrl = apiClient.baseUrl?.trimEnd('/') ?: throw IOException("No server configured")
-        val extension = when (contentType.lowercase()) {
-            "image/gif" -> "gif"
-            "image/webp" -> "webp"
-            "image/png" -> "png"
-            else -> "jpg"
-        }
+        val extension = CommentAttachmentPolicy.extensionFor(contentType)
+            ?: throw IOException("Unsupported image type")
         val body = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("file", "upload.$extension", bytes.toRequestBody(contentType.toMediaType()))

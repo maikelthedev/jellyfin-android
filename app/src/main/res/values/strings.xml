@@ -190,6 +190,7 @@
     <string name="comments_empty">No comments yet. Be the first to comment!</string>
     <string name="comments_input_hint">Add a comment…</string>
     <string name="comments_send">Post</string>
+    <string name="comments_attach">Attach an image</string>
     <string name="comments_reply">Reply</string>
     <string name="comments_like">Like</string>
     <string name="comments_delete">Delete</string>

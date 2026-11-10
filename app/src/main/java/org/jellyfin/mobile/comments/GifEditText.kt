@@ -26,10 +26,7 @@ class GifEditText @JvmOverloads constructor(
 
     override fun onCreateInputConnection(outAttrs: EditorInfo): InputConnection? {
         val connection = super.onCreateInputConnection(outAttrs) ?: return null
-        EditorInfoCompat.setContentMimeTypes(
-            outAttrs,
-            arrayOf("image/gif", "image/webp", "image/png", "image/jpeg"),
-        )
+        EditorInfoCompat.setContentMimeTypes(outAttrs, CommentAttachmentPolicy.mimeTypes)
 
         return InputConnectionCompat.createWrapper(
             connection,

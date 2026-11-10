@@ -82,6 +82,7 @@ class CommentsPanel(
     private val closeButton: ImageButton = binding.commentsClose
     private val input: GifEditText = binding.commentsInput
     private val sendButton: TextView = binding.commentsSend
+    private val attachButton: ImageButton = binding.commentsAttach
     private val mentionSuggestions: LinearLayout = binding.commentsMentionSuggestions
     private val mediaRow: View = binding.commentsMediaRow
     private val mediaPreview: ImageView = binding.commentsMediaPreview
@@ -153,6 +154,7 @@ class CommentsPanel(
             updateMentionSuggestions()
         }
         input.onGifPicked = ::handleGifPicked
+        attachButton.setOnClickListener { fragment.openCommentAttachmentPicker() }
         mediaRemove.setOnClickListener { clearMedia() }
         input.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
@@ -448,6 +450,11 @@ class CommentsPanel(
         val enabled = !mediaUploading && (input.text?.isNotBlank() == true || pendingMediaFileName != null)
         sendButton.isEnabled = enabled
         sendButton.alpha = if (enabled) 1f else 0.45f
+    }
+
+    fun handleAttachment(uri: Uri) {
+        val contentType = context.contentResolver.getType(uri) ?: "image/gif"
+        handleGifPicked(uri, contentType)
     }
 
     private fun handleGifPicked(uri: Uri, contentType: String) {

@@ -5,6 +5,7 @@ import android.app.PictureInPictureParams
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Rect
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -18,6 +19,7 @@ import android.view.WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -35,6 +37,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.jellyfin.mobile.R
 import org.jellyfin.mobile.app.AppPreferences
+import org.jellyfin.mobile.comments.CommentAttachmentPolicy
 import org.jellyfin.mobile.comments.CommentIds
 import org.jellyfin.mobile.comments.CommentsPanel
 import org.jellyfin.mobile.comments.CommentsWindowPolicy
@@ -84,6 +87,10 @@ class PlayerFragment : Fragment(), BackPressInterceptor {
     private val fullscreenSwitcher: ImageButton get() = playerControlsBinding.fullscreenSwitcher
     private var playerMenus: PlayerMenus? = null
     private var commentsPanel: CommentsPanel? = null
+
+    private val commentAttachmentPicker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
+        uri?.let { commentsPanel?.handleAttachment(it) }
+    }
 
     /** Set when the panel was taken away because the window shrank, so it can come back. */
     private var commentsHiddenForSmallWindow = false
@@ -375,6 +382,11 @@ class PlayerFragment : Fragment(), BackPressInterceptor {
 
     fun openCommentsThread(itemId: String, commentId: String) {
         commentsPanel?.showThread(itemId, commentId)
+    }
+
+    /** Opens the system picker for a still image or GIF attached to a comment. */
+    fun openCommentAttachmentPicker() {
+        commentAttachmentPicker.launch(CommentAttachmentPolicy.mimeTypes)
     }
 
     private fun openPendingCommentThread(playingItemId: String?) {

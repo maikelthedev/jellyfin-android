@@ -401,6 +401,17 @@
                             android:textColorHint="#80FFFFFF"
                             android:textSize="14sp" />
 
+                        <ImageButton
+                            android:id="@+id/comments_attach"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginStart="6dp"
+                            android:background="?android:attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/comments_attach"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_attach_file_white_24dp"
+                            app:tint="#B3FFFFFF" />
+
                         <TextView
                             android:id="@+id/comments_send"
                             android:layout_width="wrap_content"
